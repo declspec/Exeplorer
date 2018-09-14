@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using Exeplorer.Extensions;
+using Exeplorer.IO;
 
 namespace Exeplorer
 {
@@ -10,6 +9,11 @@ namespace Exeplorer
     {
         static void Main(string[] args)
         {
+            using (var es = new ExeStream(new FileStream(@"C:\Windows\System32\kernel32.dll", FileMode.Open, FileAccess.Read), AddressMode.File)) {
+                es.ReadExportAddressTable();
+            }
+
+            Console.Read();
         }
     }
 }
