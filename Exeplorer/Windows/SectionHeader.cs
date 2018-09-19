@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 
 namespace Exeplorer.Windows {
-    public struct ImageSectionHeader {
+    public class SectionHeader {
         public string Name;
         public SectionHeaderMiscellaneous Misc;
         public uint VirtualAddress;

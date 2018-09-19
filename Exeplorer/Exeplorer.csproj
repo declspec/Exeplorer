@@ -43,20 +43,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\ExeStreamExtensions.cs" />
-    <Compile Include="IO\ExeReader.cs" />
     <Compile Include="IO\ExeStream.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Windows\ExportedFunction.cs" />
     <Compile Include="Windows\H.cs" />
-    <Compile Include="Windows\ImageDataDirectory.cs" />
-    <Compile Include="Windows\ImageDosHeader.cs" />
-    <Compile Include="Windows\ImageExportDirectory.cs" />
-    <Compile Include="Windows\ImageFileHeader.cs" />
-    <Compile Include="Windows\ImageImportDescriptor.cs" />
-    <Compile Include="Windows\ImageNtHeader.cs" />
-    <Compile Include="Windows\ImageOptionalHeader.cs" />
-    <Compile Include="Windows\ImageSectionHeader.cs" />
-    <Compile Include="Windows\ImageThunkData.cs" />
+    <Compile Include="Windows\DataDirectory.cs" />
+    <Compile Include="Windows\ExportDirectory.cs" />
+    <Compile Include="Windows\FileHeader.cs" />
+    <Compile Include="Windows\ImportDescriptor.cs" />
+    <Compile Include="Windows\NtHeader.cs" />
+    <Compile Include="Windows\OptionalHeader.cs" />
+    <Compile Include="Windows\SectionHeader.cs" />
+    <Compile Include="Windows\ImportedFunction.cs" />
     <Compile Include="Windows\WindowsStructConverter.cs" />
   </ItemGroup>
   <ItemGroup>

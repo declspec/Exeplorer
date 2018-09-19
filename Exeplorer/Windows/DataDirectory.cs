@@ -1,5 +1,5 @@
 ﻿namespace Exeplorer.Windows {
-    public struct ImageDataDirectory {
+    public struct DataDirectory {
         public uint VirtualAddress;
         public uint Size;
     }

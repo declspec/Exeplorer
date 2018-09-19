@@ -1,5 +1,5 @@
 ﻿namespace Exeplorer.Windows {
-    public struct ImageFileHeader {
+    public class FileHeader {
         public ushort Machine;
         public ushort NumberOfSections;
         public uint TimeDateStamp;

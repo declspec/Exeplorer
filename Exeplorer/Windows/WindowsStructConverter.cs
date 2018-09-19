@@ -3,25 +3,18 @@ using System.Text;
 
 namespace Exeplorer.Windows {
     public static class WindowsStructConverter {
-        public static ImageDosHeader ToImageDosHeader(byte[] data, int offset) {
-            return new ImageDosHeader() {
-                Magic = BitConverter.ToUInt16(data, offset),
-                Lfanew = BitConverter.ToUInt32(data, offset + H.IMAGE_SIZEOF_DOS_HEADER - sizeof(uint))
-            };
-        }
-
-        public static ImageNtHeader ToImageNtHeader(byte[] data, int offset) {
-            return new ImageNtHeader() {
+        public static NtHeader ToNtHeader(byte[] data, int offset) {
+            return new NtHeader() {
                 Signature = BitConverter.ToUInt32(data, offset),
-                FileHeader = ToImageFileHeader(data, offset + sizeof(uint)),
-                OptionalHeader = ToImageOptionalHeader(data, offset + sizeof(uint) + H.IMAGE_SIZEOF_FILE_HEADER)
+                FileHeader = ToFileHeader(data, offset + sizeof(uint)),
+                OptionalHeader = ToOptionalHeader(data, offset + sizeof(uint) + H.IMAGE_SIZEOF_FILE_HEADER)
             };
         }
 
-        public static ImageOptionalHeader ToImageOptionalHeader(byte[] data, int offset) {
+        public static OptionalHeader ToOptionalHeader(byte[] data, int offset) {
             var magic = BitConverter.ToUInt16(data, offset);
 
-            var optHeader = new ImageOptionalHeader() {
+            var optHeader = new OptionalHeader() {
                 Magic = magic,
                 MajorLinkerVersion = data[offset + 2],
                 MinorLinkerVersion = data[offset + 3],
@@ -66,18 +59,18 @@ namespace Exeplorer.Windows {
             }
 
             var directoriesOffset = magic == H.IMAGE_NT_OPTIONAL_HDR32_MAGIC ? 96 : 112;
-            optHeader.DataDirectories = new ImageDataDirectory[H.IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
+            optHeader.DataDirectories = new DataDirectory[H.IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
 
             for(var i = 0; i < H.IMAGE_NUMBEROF_DIRECTORY_ENTRIES; ++i) {
-                optHeader.DataDirectories[i] = ToImageDataDirectory(data, offset + directoriesOffset);
+                optHeader.DataDirectories[i] = ToDataDirectory(data, offset + directoriesOffset);
                 directoriesOffset += H.IMAGE_SIZEOF_DIRECTORY_ENTRY;
             }
 
             return optHeader;
         }
 
-        public static ImageOptionalHeader32 ToImageOptionalHeader32(byte[] data, int offset) {
-            return new ImageOptionalHeader32() {
+        public static OptionalHeader32 ToOptionalHeader32(byte[] data, int offset) {
+            return new OptionalHeader32() {
                 Magic = BitConverter.ToUInt16(data, offset),
                 MajorLinkerVersion = data[offset + 2],
                 MinorLinkerVersion = data[offset + 3],
@@ -111,8 +104,8 @@ namespace Exeplorer.Windows {
             };
         }
 
-        public static ImageOptionalHeader64 ToImageOptionalHeader64(byte[] data, int offset) {
-            return new ImageOptionalHeader64() {
+        public static OptionalHeader64 ToOptionalHeader64(byte[] data, int offset) {
+            return new OptionalHeader64() {
                 Magic = BitConverter.ToUInt16(data, offset),
                 MajorLinkerVersion = data[offset + 2],
                 MinorLinkerVersion = data[offset + 3],
@@ -145,10 +138,10 @@ namespace Exeplorer.Windows {
             };
         }
 
-        public static ImageSectionHeader ToImageSectionHeader(byte[] data, int offset) {
+        public static SectionHeader ToSectionHeader(byte[] data, int offset) {
             var misc = BitConverter.ToUInt32(data, offset + H.IMAGE_SIZEOF_SECTION_NAME);
 
-            return new ImageSectionHeader() {
+            return new SectionHeader() {
                 Name = Encoding.UTF8.GetString(data, offset, H.IMAGE_SIZEOF_SECTION_NAME).TrimEnd('\0'),
                 Misc = new SectionHeaderMiscellaneous(BitConverter.ToUInt32(data, offset + 8)),
                 VirtualAddress = BitConverter.ToUInt32(data, offset + 12),
@@ -162,8 +155,8 @@ namespace Exeplorer.Windows {
             };
         }
 
-        public static ImageFileHeader ToImageFileHeader(byte[] data, int offset) {
-            return new ImageFileHeader() {
+        public static FileHeader ToFileHeader(byte[] data, int offset) {
+            return new FileHeader() {
                 Machine = BitConverter.ToUInt16(data, offset),
                 NumberOfSections = BitConverter.ToUInt16(data, offset + 2),
                 TimeDateStamp = BitConverter.ToUInt32(data, offset + 4),
@@ -174,25 +167,25 @@ namespace Exeplorer.Windows {
             };
         }
 
-        public static ImageDataDirectory ToImageDataDirectory(byte[] data, int offset) {
-            return new ImageDataDirectory() {
+        public static DataDirectory ToDataDirectory(byte[] data, int offset) {
+            return new DataDirectory() {
                 VirtualAddress = BitConverter.ToUInt32(data, offset),
                 Size = BitConverter.ToUInt32(data, offset + sizeof(uint))
             };
         }
 
-        public static ImageImportDescriptor ToImageImportDescriptor(byte[] data, int offset) {
-            return new ImageImportDescriptor() {
-                OriginalFirstThunk = BitConverter.ToUInt32(data, offset),
+        public static ImportDescriptor ToImportDescriptor(byte[] data, int offset) {
+            return new ImportDescriptor() {
+                OriginalFirstThunkRva = BitConverter.ToUInt32(data, offset),
                 TimeDateStamp = BitConverter.ToUInt32(data, offset + 4),
                 ForwarderChain = BitConverter.ToUInt32(data, offset + 8),
                 Name = BitConverter.ToUInt32(data, offset + 12),
-                FirstThunk = BitConverter.ToUInt32(data, offset + 16)
+                FirstThunkRva = BitConverter.ToUInt32(data, offset + 16)
             };
         }
 
-        public static ImageExportDirectory ToImageExportDirectory(byte[] data, int offset) {
-            return new ImageExportDirectory() {
+        public static ExportDirectory ToExportDirectory(byte[] data, int offset) {
+            return new ExportDirectory() {
                 Characteristics = BitConverter.ToUInt32(data, offset),
                 TimeDateStamp = BitConverter.ToUInt32(data, offset + 4),
                 MajorVersion = BitConverter.ToUInt16(data, offset + 8),
