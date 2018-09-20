@@ -2,24 +2,25 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using Exeplorer.Windows;
+using System.Text;
+using Exeplorer.Lib.Windows;
 
-namespace Exeplorer.IO {
+namespace Exeplorer.Lib.IO {
     public enum AddressMode {
         File,
         VirtualMemory
     }
 
-    public class ExeStream : Stream {
+    public class PEStream : Stream {
         private const string ErrorIncompleteRead = "Failed to read from the underlying stream";
 
         private readonly Stream _baseStream;
         private readonly long _baseOffset;
         private readonly AddressMode _addressMode;
 
-        public FileHeader FileHeader { get; }
-        public OptionalHeader OptionalHeader { get; }
-        public IReadOnlyCollection<SectionHeader> SectionHeaders { get; }
+        public ImageFileHeader FileHeader { get; }
+        public ImageOptionalHeader OptionalHeader { get; }
+        public IReadOnlyCollection<ImageSectionHeader> SectionHeaders { get; }
 
         public override bool CanRead => true;
         public override bool CanSeek => _baseStream.CanSeek;
@@ -31,7 +32,7 @@ namespace Exeplorer.IO {
             set => _baseStream.Position = value + _baseOffset;
         }
 
-        public ExeStream(Stream stream, AddressMode addressMode) {
+        public PEStream(Stream stream, AddressMode addressMode) {
             _baseStream = stream ?? throw new ArgumentNullException(nameof(stream));
 
             if (!_baseStream.CanRead)
@@ -59,13 +60,13 @@ namespace Exeplorer.IO {
             return _baseStream.Seek(offset, origin);
         }
 
-        public long SeekRva(uint rva) {
+        public long SeekVirtualAddress(uint rva) {
             var section = GetEnclosingSectionHeader(rva);
             var delta = _addressMode == AddressMode.File ? (section.VirtualAddress - section.PointerToRawData) : 0;
             return Seek(rva - delta, SeekOrigin.Begin);
         }
 
-        public SectionHeader GetEnclosingSectionHeader(uint rva) {
+        public ImageSectionHeader GetEnclosingSectionHeader(uint rva) {
             foreach (var section in SectionHeaders) {
                 if (rva >= section.VirtualAddress && (rva < (section.VirtualAddress + (section.Misc.VirtualSize > 0 ? section.Misc.VirtualSize : section.SizeOfRawData))))
                     return section;
@@ -129,7 +130,7 @@ namespace Exeplorer.IO {
             return BitConverter.ToUInt32(buffer, H.IMAGE_SIZEOF_DOS_HEADER - sizeof(uint));
         }
 
-        private NtHeader ReadNtHeader(byte[] buffer) {
+        private ImageNtHeader ReadNtHeader(byte[] buffer) {
             // Do partial reads to account for variable image_opt_header sizes (x86/64)
             FullRead(buffer, 0, H.IMAGE_SIZEOF_FILE_HEADER + sizeof(uint) + sizeof(ushort));
             
@@ -152,14 +153,14 @@ namespace Exeplorer.IO {
 
             FullRead(buffer, magicOffset + sizeof(ushort), fileHeader.SizeOfOptionalHeader - sizeof(ushort));
 
-            return new NtHeader() {
+            return new ImageNtHeader() {
                 Signature = signature,
                 FileHeader = fileHeader,
                 OptionalHeader = WindowsStructConverter.ToImageOptionalHeader(buffer, magicOffset)
             };
         }
 
-        private IReadOnlyCollection<SectionHeader> ReadSectionHeaders(int numberOfSections, ref byte[] buffer) {
+        private IReadOnlyCollection<ImageSectionHeader> ReadSectionHeaders(int numberOfSections, ref byte[] buffer) {
             var required = numberOfSections * H.IMAGE_SIZEOF_SECTION_HEADER;
 
             // TODO: Do some validation on numberOfSections, this could easily be a target of stupidly large allocations
@@ -167,12 +168,12 @@ namespace Exeplorer.IO {
                 buffer = new byte[required];
 
             FullRead(buffer, 0, required);
-            var headers = new SectionHeader[numberOfSections];
+            var headers = new ImageSectionHeader[numberOfSections];
 
             for (var i = 0; i < numberOfSections; ++i)
                 headers[i] = WindowsStructConverter.ToImageSectionHeader(buffer, i * H.IMAGE_SIZEOF_SECTION_HEADER);
 
-            return new ReadOnlyCollection<SectionHeader>(headers);
+            return new ReadOnlyCollection<ImageSectionHeader>(headers);
         }
     }
 }

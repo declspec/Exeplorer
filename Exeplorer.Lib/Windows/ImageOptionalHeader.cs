@@ -1,5 +1,5 @@
-﻿namespace Exeplorer.Windows {
-    public class OptionalHeader {
+﻿namespace Exeplorer.Lib.Windows {
+    public class ImageOptionalHeader {
         public ushort Magic;                        //  0
         public byte MajorLinkerVersion;             //  2
         public byte MinorLinkerVersion;             //  3
@@ -29,10 +29,10 @@
         public ulong SizeOfHeapCommit;              // 
         public uint LoaderFlags;                    // 
         public uint NumberOfRvaAndSizes;            // 
-        public DataDirectory[] DataDirectories;
+        public ImageDataDirectory[] DataDirectories;
     };
 
-    public class OptionalHeader64 {
+    public class ImageOptionalHeader64 {
         public const int Size = 240;
 
         public ushort Magic;                        //  0
@@ -64,10 +64,10 @@
         public ulong SizeOfHeapCommit;              // 96
         public uint LoaderFlags;                    // 104
         public uint NumberOfRvaAndSizes;            // 108
-        public DataDirectory[] DataDirectories; // 112
+        public ImageDataDirectory[] DataDirectories; // 112
     };
 
-    public class OptionalHeader32 {
+    public class ImageOptionalHeader32 {
         public const int Size = 224;
 
         public ushort Magic;                        //  0
@@ -100,6 +100,6 @@
         public uint SizeOfHeapCommit;               // 84
         public uint LoaderFlags;                    // 88
         public uint NumberOfRvaAndSizes;            // 92
-        public DataDirectory[] DataDirectories; // 96
+        public ImageDataDirectory[] DataDirectories; // 96
     };
 }

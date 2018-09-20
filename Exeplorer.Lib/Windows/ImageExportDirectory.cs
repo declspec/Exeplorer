@@ -1,5 +1,5 @@
-﻿namespace Exeplorer.Windows {
-    public class ExportDirectory {
+﻿namespace Exeplorer.Lib.Windows {
+    public class ImageExportDirectory {
         public const int Size = 40;
 
         public uint Characteristics;

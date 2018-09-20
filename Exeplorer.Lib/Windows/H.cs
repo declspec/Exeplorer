@@ -1,4 +1,4 @@
-﻿namespace Exeplorer.Windows {
+﻿namespace Exeplorer.Lib.Windows {
     public static class H {
         public const int IMAGE_SIZEOF_FILE_HEADER = 0x14;
         public const int IMAGE_SIZEOF_SECTION_HEADER = 0x28;

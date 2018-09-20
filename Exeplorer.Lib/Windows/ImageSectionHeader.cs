@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Exeplorer.Windows {
-    public class SectionHeader {
+namespace Exeplorer.Lib.Windows {
+    public class ImageSectionHeader {
         public string Name;
         public SectionHeaderMiscellaneous Misc;
         public uint VirtualAddress;

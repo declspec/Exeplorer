@@ -1,8 +1,8 @@
-﻿namespace Exeplorer.Windows {
-    public class ImportDescriptor {
+﻿namespace Exeplorer.Lib.Windows {
+    public class ImageImportDescriptor {
         public const int Size = 20;
 
-        public uint OriginalFirstThunkRva;
+        public uint OriginalFirstThunk;
         public uint TimeDateStamp;
         public uint ForwarderChain;
         public uint Name;
